@@ -1,33 +1,36 @@
+import { handleCompletion } from "@/actions";
 import Link from "next/link";
 
 export default function BlogPage() {
   return (
-    <main className="grid h-screen grid-cols-[.5fr_1fr]">
+    <main className="grid h-screen grid-cols-[.2fr_1fr]">
       {/* SECTION 1 */}
-      <section className="bg-slate-500">
-        <h2>Chats</h2>
+      <section className="bg-gray-700 text-white">
+        <h2>Blogs</h2>
         <Link href="#" className="btn">
           Sign Out
         </Link>
       </section>
 
       {/* SECTION 2 */}
-      <section className="bg-slate-700 flex flex-col">
+      <section className="bg-gray-950 flex flex-col text-white">
         {/* INFO  */}
-        <div className="flex-1">
-          <h2>Unleash creativity</h2>
+        <div className="flex-1 flex justify-center items-center">
+          <h2 className="text-2xl font-extrabold font-serif">
+            Unleash creativity!
+          </h2>
         </div>
 
         {/* FORM      */}
-        <div className=" bg-slate-600 p-10">
-          <form>
+        <div className=" bg-gray-800 p-10">
+          <form action={handleCompletion}>
             <fieldset className="flex gap-2">
               <label htmlFor="user_prompt"></label>
               <textarea
                 name="user_prompt"
                 id="user_prompt"
-                placeholder="Create a new blog post..."
-                className="w-full resize-none rounded-md"
+                className="w-full resize-none rounded-md text-black"
+                placeholder="Create a new blog post about..."
               />
 
               <button type="submit" className="btn">
