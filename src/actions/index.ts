@@ -51,10 +51,19 @@ export async function handleCompletion(formData: FormData) {
     console.log(completion.choices[0].message.content);
 
     // Generated blog
-    const genBlog = completion.choices[0].message.content;
+    const content = completion.choices[0].message.content;
 
+    if (!content) {
+      throw new Error("Error generating content!");
+      
+    }
+    
     // Save Blog
-    const blog = await db.collection("blogs").insertOne({ blog: genBlog });
+    const parsedContent = JSON.parse(content);
+    const blog = await db.collection("blogs").insertOne({
+      ...parsedContent,
+      createdAt: new Date()
+    });
     console.log(blog);
 
     //TODO:
