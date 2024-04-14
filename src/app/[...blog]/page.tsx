@@ -1,4 +1,4 @@
-import { handleCompletion } from "@/actions";
+import { getBlogs, handleCompletion } from "@/actions";
 import clientPromise from "@/db/mongoDb";
 import { ObjectId } from "mongodb";
 import Link from "next/link";
@@ -9,25 +9,29 @@ interface BlogPageProps {
   };
 }
 
+interface Blog {
+  title: string;
+  content: string;
+  keywords: string[];
+  createdAt: Date;
+}
+
 export default async function BlogPage(props: BlogPageProps) {
-  const client = await clientPromise;
-  const db = client.db("bloggenerator");
-  const blogs = await db
-    .collection("blogs")
-    .find().toArray();
-console.log(blogs);
-    
-  // const latestBlog = await db
-  //   .collection("blogs")
-  //   .findOne({ _id: new ObjectId(props.params.blogId) });
-  //   console.log(latestBlog);
-    
+  const blogs = await getBlogs();
+
   return (
     <main className="grid h-screen grid-cols-[.2fr_1fr]">
       {/* SECTION 1 */}
       <section className="bg-gray-700 text-white">
         <h2>Blogs</h2>
-        <Link href="#" className="btn">
+
+        {blogs &&
+          blogs.map((blog) => (
+            <h3 key={blog._id.toString()} className="p-5">
+              {blog.title}
+            </h3>
+          ))}
+        <Link href="#" className="btn ml-5">
           Sign Out
         </Link>
       </section>
@@ -35,10 +39,13 @@ console.log(blogs);
       {/* SECTION 2 */}
       <section className="bg-gray-950 flex flex-col text-white">
         {/* INFO  */}
-        <div className="flex-1 flex justify-center items-center">
-          <h2 className="text-2xl font-extrabold font-serif">
+        <div className="flex-1 p-10">
+          {/* <h2 className="text-2xl font-extrabold font-serif">
             Unleash creativity!
-          </h2>
+          </h2> */}
+          <h2>Title: {blogs.at(-1).title}</h2>
+          <div  dangerouslySetInnerHTML={{__html: blogs && blogs<Blog[]>.at(-1).content}}></div>
+
         </div>
 
         {/* FORM      */}
