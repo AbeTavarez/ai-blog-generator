@@ -1,7 +1,27 @@
 import { handleCompletion } from "@/actions";
+import clientPromise from "@/db/mongoDb";
+import { ObjectId } from "mongodb";
 import Link from "next/link";
 
-export default function BlogPage() {
+interface BlogPageProps {
+  params: {
+    blogId: string;
+  };
+}
+
+export default async function BlogPage(props: BlogPageProps) {
+  const client = await clientPromise;
+  const db = client.db("bloggenerator");
+  const blogs = await db
+    .collection("blogs")
+    .find().toArray();
+console.log(blogs);
+    
+  // const latestBlog = await db
+  //   .collection("blogs")
+  //   .findOne({ _id: new ObjectId(props.params.blogId) });
+  //   console.log(latestBlog);
+    
   return (
     <main className="grid h-screen grid-cols-[.2fr_1fr]">
       {/* SECTION 1 */}
