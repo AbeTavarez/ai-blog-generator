@@ -2,6 +2,8 @@
 import OpenAI from "openai";
 import clientPromise from "@/db/mongoDb";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { ObjectId } from "mongodb";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -26,7 +28,12 @@ export async function handleCompletion(formData: FormData) {
 
     const blog = await db.collection("blogs").insertOne({ blog: genBlog });
     console.log(blog);
-    revalidatePath("/blogs");
+    //TODO:
+    if (blog) {
+      revalidatePath("/blogs");
+      // redirect(`/blogs/${blog.insertedId.toString()}`);
+    }
+    
   } catch (e) {
     console.log("Error with OPEN AI: ", e);
   }
