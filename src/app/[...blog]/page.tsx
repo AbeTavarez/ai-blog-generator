@@ -1,52 +1,34 @@
 import { getBlogs, handleCompletion } from "@/actions";
-import clientPromise from "@/db/mongoDb";
-import { ObjectId } from "mongodb";
+import BlogPost from "@/components/blog-post";
+import Generating from "@/components/generating";
 import Link from "next/link";
+import { Suspense } from "react";
 
-interface BlogPageProps {
-  params: {
-    blogId: string;
-  };
-}
-
-interface Blog {
-  title: string;
-  content: string;
-  keywords: string[];
-  createdAt: Date;
-}
-
-export default async function BlogPage(props: BlogPageProps) {
+export default async function BlogPage() {
   const blogs = await getBlogs();
 
   return (
     <main className="grid h-screen grid-cols-[.2fr_1fr]">
       {/* SECTION 1 */}
-      <section className="bg-gray-700 text-white">
-        <h2>Blogs</h2>
-
-        {blogs &&
-          blogs.map((blog) => (
-            <h3 key={blog._id.toString()} className="p-5">
-              {blog.title}
-            </h3>
-          ))}
-        <Link href="#" className="btn ml-5">
+      <section className="bg-gray-700 text-white flex flex-col">
+        <div className="flex-1">
+          {blogs &&
+            blogs.map((blog) => (
+              <h3 key={blog._id.toString()} className="p-5">
+                {blog.title}
+              </h3>
+            ))}
+        </div>
+        <Link href="#" className="btn mx-5 mb-5">
           Sign Out
         </Link>
       </section>
 
       {/* SECTION 2 */}
-      <section className="bg-gray-950 flex flex-col text-white">
-        {/* INFO  */}
-        <div className="flex-1 p-10">
-          {/* <h2 className="text-2xl font-extrabold font-serif">
-            Unleash creativity!
-          </h2> */}
-          <h2>Title: {blogs.at(-1).title}</h2>
-          <div  dangerouslySetInnerHTML={{__html: blogs && blogs<Blog[]>.at(-1).content}}></div>
-
-        </div>
+      <section className="bg-gray-950 flex flex-col text-white overflow-auto">
+        <Suspense fallback={<Generating />}>
+          <BlogPost />
+        </Suspense>
 
         {/* FORM      */}
         <div className=" bg-gray-800 p-10">

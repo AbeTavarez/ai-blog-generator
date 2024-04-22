@@ -2,8 +2,7 @@
 import OpenAI from "openai";
 import clientPromise from "@/db/mongoDb";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { ObjectId } from "mongodb";
+import { Blog } from "@/types";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -26,12 +25,12 @@ export async function handleCompletion(formData: FormData) {
   // const prompt = `Write a short blog post about ${blogTopic.trim()}.`;
   // const prompt = `Write a long and detailed blog post about ${blogTopic.trim()}.`;
   // const prompt = `Write a long and detailed blog post about ${blogTopic.trim()}.`;
-  const prompt = `Write a long and detailed blog SEO-friendly blog post about ${blogTopic.trim()}, targeting relevant keywords. The content should be formatted in SEO-friendly HTML including a HTML tile tag and meta description..
+  const prompt = `Write a long and detailed blog SEO-friendly blog post about ${blogTopic.trim()}, targeting relevant keywords. The content should be formatted in SEO-friendly HTML including a HTML title tag and meta description.
   The output format must be an JSON object with the following format:
   {
     "title": title here,
     "content": blog post here,
-    "metaInfo": meta description here,
+    "metadata": meta description here,
     "keywords": relevant keywords here 
   } 
   `;
@@ -68,8 +67,8 @@ export async function handleCompletion(formData: FormData) {
 
     //TODO:
     if (blog) {
+      //? Add it later
       revalidatePath("/blogs");
-      // redirect(`/blogs/${blog.insertedId.toString()}`);
     }
   } catch (e) {
     console.log("Error with OPEN AI: ", e);
@@ -82,7 +81,7 @@ export async function handleCompletion(formData: FormData) {
 export async function getBlogs() {
   const client = await clientPromise;
   const db = client.db("bloggenerator");
-  const blogs = await db.collection("blogs").find().toArray();
+  const blogs = await db.collection<Blog>("blogs").find().toArray();
   console.log(blogs);
   return blogs;
 }
