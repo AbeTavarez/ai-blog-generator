@@ -1,10 +1,8 @@
-import { ObjectId } from "mongodb";
-
 /**
  * Blog
  */
 export interface Blog {
-    _id: ObjectId
+    _id: string
     title: string;
     content: string;
     keywords: string;
