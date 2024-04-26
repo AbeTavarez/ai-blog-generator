@@ -1,29 +1,43 @@
 "use client";
-import { useState, useEffect } from "react";
-import { getBlogs } from "@/actions";
+import { useState, useEffect, FormEvent } from "react";
+import { getBlogs, handleCompletion } from "@/actions";
+import Generating from "./generating";
 import { Blog } from "@/types";
 
 export default function BlogPost() {
   const [blogs, setBlogs] = useState<Blog[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [userPrompt, setUserPrompt] = useState('');
 
   useEffect(() => {
-    async function fetchData() {
-      let data = await getBlogs();
-      setBlogs(data);
+    fetchBlogs();
+  }, []);
+
+  const fetchBlogs = async () => {
+    let data = await getBlogs();
+    setBlogs(data);
+  }
+
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    try {
+      e.preventDefault();
+      setLoading(true);
+      await handleCompletion(userPrompt);
+      await fetchBlogs();
+      setLoading(false);
+      setUserPrompt('');
+    } catch (error) {
+      console.log(error);
     }
-    fetchData();
-  }, [blogs]);
+  }
 
   return (
-    <>
-      {!blogs?.length ? (
-        <div className="flex-1 p-5 overflow-auto flex justify-center items-center">
-            <h2 className="text-2xl">Start creating today</h2>
-        </div>
-      ) : (
+    <> 
+      {loading ? <Generating /> : blogs && (
         <>
           {/* INFO  */}
-          <div className="flex-1 p-5 overflow-auto">
+          <div className="flex-1 p-10 overflow-y-hidden hover:overflow-y-auto">
             {/* <h2 className="text-2xl font-extrabold font-serif">
             Unleash creativity!
           </h2> */}
@@ -60,8 +74,29 @@ export default function BlogPost() {
               </div>
             </div>
           </div>
-        </>
+          </>
       )}
+          {/* FORM      */}
+        <div className=" bg-gray-800 p-10">
+          <form onSubmit={handleSubmit}>
+            <fieldset className="flex gap-2">
+              <label htmlFor="user_prompt"></label>
+              <textarea
+                name="user_prompt"
+                id="user_prompt"
+                className="w-full resize-none rounded-md text-black"
+                placeholder="Create a new blog post about..."
+                value={userPrompt}
+                onChange={(e) => setUserPrompt(e.target.value)}
+              />
+
+              <button type="submit" className="btn">
+                Create
+              </button>
+            </fieldset>
+          </form>
+        </div>
+
     </>
   );
 }
