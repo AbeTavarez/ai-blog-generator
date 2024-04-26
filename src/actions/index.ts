@@ -12,9 +12,10 @@ const openai = new OpenAI({
  * Handle Completion
  * @param formData
  */
-export async function handleCompletion(formData: FormData) {
+export async function handleCompletion(userPrompt: string) {
   // check topic
-  const blogTopic = formData.get("user_prompt") as string;
+  // const blogTopic = formData.get("user_prompt") as string;
+  const blogTopic = userPrompt;
   console.log(blogTopic);
 
   // DB Client
@@ -22,9 +23,6 @@ export async function handleCompletion(formData: FormData) {
   const db = client.db("bloggenerator");
 
   // Prompt
-  // const prompt = `Write a short blog post about ${blogTopic.trim()}.`;
-  // const prompt = `Write a long and detailed blog post about ${blogTopic.trim()}.`;
-  // const prompt = `Write a long and detailed blog post about ${blogTopic.trim()}.`;
   const prompt = `Write a long and detailed blog SEO-friendly blog post about ${blogTopic.trim()}, targeting relevant keywords. The content should be formatted in SEO-friendly HTML including a HTML title tag and meta description.
   The output format must be an JSON object with the following format:
   {
@@ -82,6 +80,16 @@ export async function getBlogs() {
   const client = await clientPromise;
   const db = client.db("bloggenerator");
   const blogs = await db.collection<Blog>("blogs").find().toArray();
-  console.log(blogs);
-  return blogs;
+  // console.log(blogs);
+  // return blogs;
+  // Convert _id from ObjectId to string
+  const blogsWithStrId = blogs.map(blog => {
+    const { _id, ...rest } = blog;
+    return {
+      ...rest,
+      _id: _id.toString()
+    };
+  });
+
+  return blogsWithStrId;
 }
